@@ -8,6 +8,21 @@ A Next.js backend for the AETEKONECT platform, built with TypeScript and Supabas
 - pnpm
 - Supabase project access (for local database tooling)
 
+## Environment setup
+
+Create a `.env.local` file in the backend root with the required configuration as shown below and in `.env.example`.
+
+Example:
+
+```sh
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+If your project uses a different set of variables, add them here based on your Supabase or app configuration.
+
 ## Getting started
 
 1. Install dependencies:
