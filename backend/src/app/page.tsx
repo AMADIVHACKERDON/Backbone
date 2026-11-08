@@ -17,7 +17,28 @@ const pingFetcher = async (url: string): Promise<number> => {
 export default function NetworkMonitor() {
   const [activeCarrier, setActiveCarrier] = useState(MOCK_CARRIERS[0]);
   const [logs, setLogs] = useState<string[]>(['System initialized. Monitoring network...']);
+  const [esimLoading, setEsimLoading] = useState(false);
+  const [esimData, setEsimData] = useState<{ esim_iccid: string; esim_qr_code: string } | null>(null);
 
+  const activateEsim = async () => {
+    setEsimLoading(true);
+    addLog('Requesting multi-carrier eSIM from Zendit Sandbox...');
+    try {
+      const res = await fetch('/api/provision-esim', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Provisioning failed');
+
+      setEsimData(data.profile);
+      setActiveCarrier(data.profile.active_network);
+      addLog(`✅ eSIM Activated! ICCID: ${data.profile.esim_iccid}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error';
+      addLog(`❌ eSIM Error: ${msg}`);
+    } finally {
+      setEsimLoading(false);
+    }
+  };
+  
   const addLog = (msg: string) => {
     const time = new Date().toLocaleTimeString();
     setLogs((prev) => [`[${time}] ${msg}`, ...prev.slice(0, 9)]);
@@ -98,6 +119,21 @@ export default function NetworkMonitor() {
         >
           Simulate Signal Drop
         </button>
+        <button
+  disabled={esimLoading}
+  onClick={activateEsim}
+  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg text-sm font-medium transition"
+>
+  {esimLoading ? 'Provisioning eSIM...' : 'Activate Smart eSIM (Zendit)'}
+</button>
+
+{esimData && (
+  <div className="p-3 bg-slate-950 border border-emerald-500/30 rounded-lg text-xs font-mono space-y-1 break-all">
+    <div className="text-emerald-400 font-semibold">Digital SIM Ready:</div>
+    <div>ICCID: {esimData.esim_iccid}</div>
+    <div className="text-slate-400">LPA: {esimData.esim_qr_code}</div>
+  </div>
+)}
       </div>
 
       <div>

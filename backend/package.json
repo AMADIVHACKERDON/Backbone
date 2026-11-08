@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "db:push": "pnpm supabase db push",
     "db:reset": "pnpm supabase db reset --linked && pnpm db:types",
-    "db:types": "pnpm supabase gen types typescript --local > src/lib/supabase/database.types.ts"
+    "db:types": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
